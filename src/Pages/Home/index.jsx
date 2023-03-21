@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import './styles.css'
 
 import { Card } from '../../components/Card/'
@@ -11,6 +11,7 @@ export function Home() {
   // presença
 
   const [students, setStudents] = useState([])
+  const [user, setUser] = useState({name: '', avatar: ''})
 
   function handleAddStudent(){
     const newStudent = {
@@ -52,10 +53,23 @@ export function Home() {
   Depois de montado o objeto, ele é adicionado ao estado
   setStudents e esse novo objeto student passa a fazer parte
   do array students
-
-  
-  
   */
+
+  useEffect(()=>{
+    fetch('https://api.github.com/users/Clara-Pacheco')
+    .then(response => response.json())
+    .then(data => {
+      setUser({
+        name: data.name,
+        avatar: data.avatar_url
+      })
+    })
+  },[students])
+
+  // Nesse exemplo, o useEffect será dependente
+  // da listagem de estudantes; toda vez que mudar essa listagem,
+  // o que for colocado dentro do corpo do useEffect será executado;
+
 
 
   return (
@@ -63,8 +77,8 @@ export function Home() {
     <header>
       <h1>Lista de Presença</h1>
       <div>
-        <strong>Clara Pacheco</strong>
-        <img src='https://github.com/Clara-Pacheco.png' alt='Foto de Perfil'/>
+        <strong>{user.name}</strong>
+        <img src={user.avatar} alt='Foto de Perfil'/>
       </div>
     </header>
     
@@ -77,7 +91,7 @@ export function Home() {
      onClick={handleAddStudent}>Adicionar</button>
 
     {
-      students.map(student => <Card name={student.name} time={student.time} />)
+      students.map(student => <Card key={student.time} name={student.name} time={student.time} />)
       
 
     }
